@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Badge, Tabs, Modal } from 'flowbite-react';
 import { CheckCircleIcon, XMarkIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { db } from '../../firebase';
-import { collection, doc, updateDoc, onSnapshot, getDoc } from 'firebase/firestore';
+import { collection, doc, updateDoc, onSnapshot, getDoc, query, limit } from 'firebase/firestore';
 
-const RequestsTable = () => {
+const RequestsTable = ({ rowLimit, showTitle = true }) => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
-    const [applicationData, setApplicationData] = useState(null); // New state for application data
+    const [applicationData, setApplicationData] = useState(null);
 
     // Fetch users from Firestore (users collection)
     useEffect(() => {
@@ -18,8 +18,11 @@ const RequestsTable = () => {
         setError(null);
 
         const usersRef = collection(db, 'users');
+        
+        // Create a query with optional row limit
+        const usersQuery = rowLimit ? query(usersRef, limit(rowLimit)) : usersRef;
 
-        const unsubscribe = onSnapshot(usersRef, (querySnapshot) => {
+        const unsubscribe = onSnapshot(usersQuery, (querySnapshot) => {
             const userData = [];
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
@@ -44,9 +47,9 @@ const RequestsTable = () => {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [rowLimit]);
 
-    // Fetch application data from Firestore (applications collection) when a user is selected
+    // Rest of your existing code...
     useEffect(() => {
         if (selectedUser) {
             const fetchApplicationData = async () => {
@@ -58,21 +61,20 @@ const RequestsTable = () => {
                         setApplicationData(appDocSnap.data());
                     } else {
                         console.log("No such document in applications collection!");
-                        setApplicationData(null); // Set to null if not found
+                        setApplicationData(null);
                     }
                 } catch (error) {
                     console.error("Error fetching application data:", error);
                     setError(error.message);
-                    setApplicationData(null); // Set to null on error
+                    setApplicationData(null);
                 }
             };
 
             fetchApplicationData();
         } else {
-            setApplicationData(null); // Clear application data when modal is closed
+            setApplicationData(null);
         }
-    }, [selectedUser]); // Dependency on selectedUser
-
+    }, [selectedUser]);
 
     const handleAction = async (userId, action) => {
         try {
@@ -107,60 +109,69 @@ const RequestsTable = () => {
         return <div>Error: {error}</div>;
     }
 
+    // Conditional rendering based on whether we show tabs or just the table
+    const tableContent = (
+        <Table hoverable>
+            <Table.Head>
+                <Table.HeadCell>Application Number</Table.HeadCell>
+                <Table.HeadCell>Student Name</Table.HeadCell>
+                <Table.HeadCell>School</Table.HeadCell>
+                <Table.HeadCell>Status</Table.HeadCell>
+                <Table.HeadCell>Actions</Table.HeadCell>
+            </Table.Head>
+            <Table.Body className="divide-y">
+                {users.map((user) => (
+                    <Table.Row key={user.id}>
+                        <Table.Cell>{user.applicationNumber}</Table.Cell>
+                        <Table.Cell>{user.student}</Table.Cell>
+                        <Table.Cell>{user.school}</Table.Cell>
+                        <Table.Cell>
+                            <Badge
+                                color={
+                                    user.status === 'Scholarship Approved'
+                                        ? 'success'
+                                        : user.status === 'Rejected'
+                                        ? 'failure'
+                                        : 'warning'
+                                }
+                            >
+                                {user.status}
+                            </Badge>
+                        </Table.Cell>
+                        <Table.Cell>
+                            <div className="flex space-x-2">
+                                <Button size="sm" color="info" onClick={() => handleView(user)}>
+                                    <EyeIcon className="h-4 w-4 mr-1" /> View
+                                </Button>
+                                {user.status !== 'Scholarship Approved' && user.status !== 'Rejected' && (
+                                    <>
+                                        <Button size="sm" color="success" onClick={() => handleAction(user.id, 'approve')}>
+                                            <CheckCircleIcon className="h-4 w-4 mr-1" /> Approve
+                                        </Button>
+                                        <Button size="sm" color="failure" onClick={() => handleAction(user.id, 'reject')}>
+                                            <XMarkIcon className="h-4 w-4 mr-1" /> Reject
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
+                        </Table.Cell>
+                    </Table.Row>
+                ))}
+            </Table.Body>
+        </Table>
+    );
+
     return (
         <div className="w-full overflow-x-auto">
-            <Tabs aria-label="All Applications" style="underline" className="mb-4">
-                <Tabs.Item active={true} title="All Applications">
-                    <Table hoverable>
-                        <Table.Head>
-                            <Table.HeadCell>Application Number</Table.HeadCell>
-                            <Table.HeadCell>Student Name</Table.HeadCell>
-                            <Table.HeadCell>School</Table.HeadCell>
-                            <Table.HeadCell>Status</Table.HeadCell>
-                            <Table.HeadCell>Actions</Table.HeadCell>
-                        </Table.Head>
-                        <Table.Body className="divide-y">
-                            {users.map((user) => (
-                                <Table.Row key={user.id}>
-                                    <Table.Cell>{user.applicationNumber}</Table.Cell>
-                                    <Table.Cell>{user.student}</Table.Cell>
-                                    <Table.Cell>{user.school}</Table.Cell>
-                                    <Table.Cell>
-                                        <Badge
-                                            color={
-                                                user.status === 'Scholarship Approved'
-                                                    ? 'success'
-                                                    : user.status === 'Rejected'
-                                                    ? 'failure'
-                                                    : 'warning'
-                                            }
-                                        >
-                                            {user.status}
-                                        </Badge>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <div className="flex space-x-2">
-                                            <Button size="sm" color="info" onClick={() => handleView(user)}>
-                                                <EyeIcon className="h-4 w-4 mr-1" /> View
-                                            </Button>
-                                            {user.status !== 'Scholarship Approved' && user.status !== 'Rejected' && (
-                                                <>
-                                                    <Button size="sm" color="success" onClick={() => handleAction(user.id, 'approve')}>
-                                                        <CheckCircleIcon className="h-4 w-4 mr-1" /> Approve
-                                                    </Button>
-                                                    <Button size="sm" color="failure" onClick={() => handleAction(user.id, 'reject')}>
-                                                        <XMarkIcon className="h-4 w-4 mr-1" /> Reject
-                                                    </Button>
-                                                </>
-                                            )}
-                                        </div>
-                                    </Table.Cell>
-                                </Table.Row>
-                            ))}
-                        </Table.Body>
-                    </Table>
-                </Tabs.Item>
-            </Tabs>
+            {showTitle ? (
+                <Tabs aria-label="All Applications" style="underline" className="mb-4">
+                    <Tabs.Item active={true} title="All Applications">
+                        {tableContent}
+                    </Tabs.Item>
+                </Tabs>
+            ) : (
+                tableContent
+            )}
 
             <Modal show={showModal} size="xl" popup onClose={closeModal}>
                 <Modal.Header>
@@ -170,7 +181,6 @@ const RequestsTable = () => {
                     {selectedUser && (
                         <div className="space-y-4">
                             <h3 className="text-xl font-semibold">Documents</h3>
-                            {/* Display documents from the 'applications' collection */}
                             {applicationData && applicationData.fileURLs ? (
                                 Object.entries(applicationData.fileURLs).map(([key, value]) => (
                                     <div key={key}>

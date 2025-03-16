@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { db } from '../../firebase'; // Import your Firebase setup
 import { collection, onSnapshot } from 'firebase/firestore';
 
-const SchoolDistribution = () => {
+const SchoolDistribution = ({ limit = null }) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -24,12 +24,18 @@ const SchoolDistribution = () => {
             });
 
             // Convert to Recharts format and sort by application count (descending)
-            const chartData = Object.keys(schoolCounts)
+            let chartData = Object.keys(schoolCounts)
                 .map((school) => ({
                     school: school,
                     applications: schoolCounts[school],
                 }))
                 .sort((a, b) => b.applications - a.applications); // Sort by applications
+            
+            // Limit the data if a limit is specified
+            if (limit && chartData.length > limit) {
+                chartData = chartData.slice(0, limit);
+            }
+            
             console.log("Chart Data:", chartData);
 
             setData(chartData);
@@ -41,7 +47,7 @@ const SchoolDistribution = () => {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [limit]);
 
     if (loading) {
         return <div>Loading chart data...</div>;
@@ -50,7 +56,8 @@ const SchoolDistribution = () => {
     if (error) {
         return <div>Error loading chart data: {error}</div>;
     }
-     const CustomTooltip = ({ active, payload, label }) => {
+    
+    const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
             return (
                 <div className="custom-tooltip" style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}>
@@ -61,7 +68,6 @@ const SchoolDistribution = () => {
 
         return null;
     };
-
 
     return (
         <ResponsiveContainer width="100%" height={300}>

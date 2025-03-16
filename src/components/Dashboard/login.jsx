@@ -60,7 +60,7 @@ const Login = ({ setIsLoggedIn }) => {
 
           <div className="p-6 space-y-6">
             <div className="text-center">
-              <h3 className="w-full text-center text-2xl font-bold text-gray-800">
+              <h3 className="w-full text-center text-2xl font-bold text-gray-800 dark:text-white">
                 Welcome to{" "}
                 <span className="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
                   DIGISCHOLAR-ADMIN

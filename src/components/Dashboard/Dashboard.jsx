@@ -1,6 +1,6 @@
 // dashboard.jsx
-import React from 'react';
-import { Card } from 'flowbite-react';
+import React from "react";
+import { Card } from "flowbite-react";
 import ApplicationChart from "../Charts/ApplicationChart";
 import GenderDistribution from "../Charts/GenderDistribution";
 import SchoolDistribution from "../Charts/SchoolDistribution";
@@ -19,7 +19,9 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <Card className="h-[400px]">
           <div className="p-4 h-full flex flex-col">
-            <h5 className="text-lg font-bold mb-4 dark:text-white">Application Trends</h5>
+            <h5 className="text-lg font-bold mb-4 dark:text-white">
+              Application Trends
+            </h5>
             <div className="flex-1 relative">
               <ApplicationChart />
             </div>
@@ -28,7 +30,9 @@ const Dashboard = () => {
 
         <Card className="h-[400px]">
           <div className="p-4 h-full flex flex-col">
-            <h5 className="text-lg font-bold mb-4 dark:text-white">Gender Distribution</h5>
+            <h5 className="text-lg font-bold mb-4 dark:text-white">
+              Gender Distribution
+            </h5>
             <div className="flex-1 relative">
               <GenderDistribution />
             </div>
@@ -37,9 +41,11 @@ const Dashboard = () => {
 
         <Card className="h-[400px]">
           <div className="p-4 h-full flex flex-col">
-            <h5 className="text-lg font-bold mb-4 dark:text-white">School Distribution</h5>
+            <h5 className="text-lg font-bold mb-4 dark:text-white">
+              School Distribution
+            </h5>
             <div className="flex-1 relative">
-              <SchoolDistribution />
+              <SchoolDistribution limit={5} />
             </div>
           </div>
         </Card>
@@ -47,8 +53,10 @@ const Dashboard = () => {
 
       <Card className="mb-8">
         <div className="p-4">
-          <h5 className="text-lg font-bold mb-4 dark:text-white">Applications</h5>
-          <RequestsTable />
+          <h5 className="text-lg font-bold mb-4 dark:text-white">
+            Recent Applications
+          </h5>
+          <RequestsTable rowLimit={3} showTitle={false} />
         </div>
       </Card>
     </div>
