@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Badge, Tabs, Modal } from 'flowbite-react';
 import { CheckCircleIcon, XMarkIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { db } from '../../firebase';
-import { collection, doc, updateDoc, onSnapshot, getDoc, query, limit } from 'firebase/firestore';
+import { collection, doc, updateDoc, onSnapshot, getDoc, query, limit, orderBy, serverTimestamp } from 'firebase/firestore';
 
 const RequestsTable = ({ rowLimit, showTitle = true }) => {
     const [users, setUsers] = useState([]);
@@ -19,31 +19,46 @@ const RequestsTable = ({ rowLimit, showTitle = true }) => {
 
         const usersRef = collection(db, 'users');
         
-        // Create a query with optional row limit
-        const usersQuery = rowLimit ? query(usersRef, limit(rowLimit)) : usersRef;
+        // Create a query with optional row limit and ordering by timestamp
+        const usersQuery = rowLimit 
+            ? query(usersRef, orderBy('timestamp', 'desc'), limit(rowLimit))
+            : query(usersRef, orderBy('timestamp', 'desc'));
 
-        const unsubscribe = onSnapshot(usersQuery, (querySnapshot) => {
-            const userData = [];
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                let status = data.status || 'Pending';
+        const unsubscribe = onSnapshot(usersQuery, {
+            next: (querySnapshot) => {
+                const userData = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    let status = data.status || 'Pending';
+                    
+                    // Handle both server timestamp and local timestamp
+                    let timestamp = data.timestamp;
+                    if (timestamp) {
+                        // Convert Firebase Timestamp to JS Date if needed
+                        timestamp = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                    } else {
+                        timestamp = new Date(); // Fallback for documents without timestamp
+                    }
 
-                userData.push({
-                    id: doc.id,
-                    applicationNumber: doc.id,
-                    student: data.name || 'N/A',
-                    school: data.school || 'N/A',
-                    status: status,
-                    ...data,
+                    userData.push({
+                        id: doc.id,
+                        applicationNumber: doc.id,
+                        student: data.name || 'N/A',
+                        school: data.school || 'N/A',
+                        status: status,
+                        timestamp: timestamp,
+                        ...data,
+                    });
                 });
-            });
 
-            setUsers(userData);
-            setLoading(false);
-        }, (error) => {
-            console.error("Error fetching user data:", error);
-            setError(error.message);
-            setLoading(false);
+                setUsers(userData);
+                setLoading(false);
+            },
+            error: (error) => {
+                console.error("Error fetching user data:", error);
+                setError(error.message);
+                setLoading(false);
+            }
         });
 
         return () => unsubscribe();
@@ -82,7 +97,10 @@ const RequestsTable = ({ rowLimit, showTitle = true }) => {
             const newStatus = action === 'approve' ? 'Scholarship Approved' : (action === 'reject' ? 'Rejected' : undefined);
 
             if (newStatus) {
-                await updateDoc(userRef, { status: newStatus });
+                await updateDoc(userRef, { 
+                    status: newStatus,
+                    timestamp: serverTimestamp()
+                });
                 console.log(`User ${userId} status updated to: ${newStatus}`);
             }
         } catch (error) {

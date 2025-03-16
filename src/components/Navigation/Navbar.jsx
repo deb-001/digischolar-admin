@@ -7,38 +7,28 @@ import {
   TextInput,
 } from 'flowbite-react';
 import { HiSearch, HiBell, HiOutlineMenuAlt1, HiChevronLeft } from 'react-icons/hi';
-import { db } from '../../firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
-export default function TopNavbar({ onMenuToggle, sidebarOpen, setSidebarOpen }) {
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export default function TopNavbar({ onMenuToggle, sidebarOpen, setSidebarOpen, setIsLoggedIn }) {
+  const [userId, setUserId] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const loginRef = collection(db, 'login');
-        const q = query(loginRef, where("ID", "==", "Khushal Jhingan")); // Replace with actual logged-in user ID
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          setUserData(querySnapshot.docs[0].data());
-        } else {
-          setError("User not found");
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
+    // Get user ID from localStorage
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
   }, []);
+
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.removeItem('userId');
+    // Update login state
+    setIsLoggedIn(false);
+    // Navigate to login
+    navigate('/login');
+  };
 
   return (
     <Navbar fluid className="fixed top-0 left-0 w-full z-40 bg-white border-b dark:bg-gray-800 h-16">
@@ -96,23 +86,27 @@ export default function TopNavbar({ onMenuToggle, sidebarOpen, setSidebarOpen })
             arrowIcon={false}
             inline
             label={
-              <Avatar
-                img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                rounded
-                size="sm"
-                className="hover:ring-2 ring-gray-300 dark:ring-gray-500"
-              />
+              <div className="flex items-center gap-2">
+                <span className="hidden md:block text-sm font-medium text-gray-900 dark:text-white">
+                  {userId}
+                </span>
+                <Avatar
+                  alt={userId}
+                  img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                  rounded
+                  size="sm"
+                  className="hover:ring-2 ring-gray-300 dark:ring-gray-500"
+                />
+              </div>
             }
           >
             <Dropdown.Header>
-              {loading && <span className="text-sm block">Loading...</span>}
-              {error && <span className="text-sm block text-red-500">Error: {error}</span>}
-              {userData && <span className="text-sm block">{userData.ID}</span>}
+              <span className="block text-sm font-medium truncate">{userId}</span>
             </Dropdown.Header>
             <Dropdown.Item>Dashboard</Dropdown.Item>
             <Dropdown.Item>Settings</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item>Sign out</Dropdown.Item>
+            <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
           </Dropdown>
         </div>
       </div>

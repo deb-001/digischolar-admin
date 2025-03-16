@@ -8,6 +8,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Analytics from './pages/Analytics';
 import Applications from './pages/Applications';
 import Login from './components/Dashboard/login'; // Import the Login component
+import { migrateTimestamps } from './utils/migration';
 
 const theme = {
     theme: {
@@ -23,7 +24,18 @@ function App() {
     const [mobileSidebarHidden, setMobileSidebarHidden] = useState(false);
     const wasSidebarOpen = useRef(true);
     const isDesktop = useRef(true);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Add login state
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        // Check if user is logged in on component mount
+        const userId = localStorage.getItem('userId');
+        if (userId) {
+            setIsLoggedIn(true);
+        }
+
+        // Run the migration
+        migrateTimestamps().catch(console.error);
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -69,7 +81,7 @@ function App() {
                             sidebarOpen={sidebarOpen}
                             mobileHidden={mobileSidebarHidden}
                             setMobileHidden={setMobileSidebarHidden}
-                            setIsLoggedIn={setIsLoggedIn} // Pass setIsLoggedIn to sidebar
+                            setIsLoggedIn={setIsLoggedIn}
                         />
                         <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-16'} ${!mobileSidebarHidden ? 'lg:ml-64' : ''}`}>
                             <TopNavbar
@@ -83,6 +95,7 @@ function App() {
                                 }}
                                 sidebarOpen={sidebarOpen}
                                 setSidebarOpen={setSidebarOpen}
+                                setIsLoggedIn={setIsLoggedIn}
                             />
                             <main className="flex-1 overflow-y-auto pt-20">
                                 <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">

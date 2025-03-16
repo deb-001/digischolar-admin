@@ -38,6 +38,8 @@ const Login = ({ setIsLoggedIn }) => {
       const userData = querySnapshot.docs[0].data();
 
       if (userData.Password === password) {
+        // Store user ID in localStorage
+        localStorage.setItem('userId', userData.ID);
         setIsLoggedIn(true);
         navigate("/dashboard");
       } else {
