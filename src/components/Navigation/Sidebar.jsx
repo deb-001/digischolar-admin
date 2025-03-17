@@ -25,7 +25,7 @@ export default function SideNavigation({ sidebarOpen, mobileHidden, setMobileHid
       {/* Sidebar */}
       <Sidebar
         aria-label="Sidebar"
-        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 z-30 transition-all duration-300 overflow-hidden
+        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 z-40 transition-all duration-300 overflow-hidden
           ${sidebarOpen || !mobileHidden ? 'w-64' : 'w-16 lg:w-16'}
           ${mobileHidden ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}`}
       >
@@ -75,7 +75,7 @@ export default function SideNavigation({ sidebarOpen, mobileHidden, setMobileHid
               </Sidebar.Item>
               <Sidebar.Item
                 as={Link}
-                to="/help"
+                to="/helpcenter"
                 icon={HiSupport}
                 className="rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 onClick={() => setMobileHidden(true)}

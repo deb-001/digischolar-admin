@@ -8,7 +8,7 @@ const GenderDistribution = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const COLORS = ['#3B82F6', '#EC4899', '#10B981'];
+    const COLORS = ['#10B981', '#3B82F6', '#EC4899'];
 
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
         const RADIAN = Math.PI / 180;
