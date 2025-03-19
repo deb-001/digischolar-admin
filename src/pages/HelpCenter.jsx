@@ -4,7 +4,7 @@ import { HiQuestionMarkCircle, HiMail, HiPhone } from "react-icons/hi"; // Impor
 export default function HelpCenter() {
   const faqs = [
     { question: "How do I reset my password?", answer: "Go to the settings page and click 'Reset Password'." },
-    { question: "How can I contact support?", answer: "Email us at support@digischolar.com or call +1234567890." },
+    { question: "How can I contact support?", answer: "Email us at support@digischolar.ac.in or call +1234567890." },
     { question: "Why is my account restricted?", answer: "Please ensure you follow our community guidelines. Contact support for assistance." },
     { question: "What are the system requirements?", answer: "DigiScholar Admin Portal works best with modern browsers like Chrome, Firefox, Safari, and Edge. Ensure you have a stable internet connection for optimal performance." },
     { question: "Can I export data from the portal?", answer: "Yes, most tables within the portal have an export to CSV option. Look for the 'Export CSV' button within the table view." },
@@ -46,7 +46,7 @@ export default function HelpCenter() {
           <div className="space-y-4">
             <p className="text-gray-700 dark:text-gray-300 flex items-center">
               <HiMail className="h-5 w-5 mr-2 text-gray-500 dark:text-gray-400" />
-              Email us at <a href="mailto:support@digischolar.com" className="text-blue-600 dark:text-blue-500 hover:underline">support@digischolar.com</a>
+              Email us at <a href="mailto:support@digischolar.ac.in" className="text-blue-600 dark:text-blue-500 hover:underline">support@digischolar.ac.in</a>
             </p>
             <p className="text-gray-700 dark:text-gray-300 flex items-center">
               <HiPhone className="h-5 w-5 mr-2 text-gray-500 dark:text-gray-400" />
