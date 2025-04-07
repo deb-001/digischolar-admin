@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { db } from '../../firebase'; // Import your Firebase setup
+import { db } from '../../firebase'; 
 import { collection, onSnapshot } from 'firebase/firestore';
 
 const SchoolDistribution = ({ limit = null }) => {
@@ -9,29 +9,29 @@ const SchoolDistribution = ({ limit = null }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const usersRef = collection(db, 'users'); //  Your users collection
+        const usersRef = collection(db, 'users');
 
         const unsubscribe = onSnapshot(usersRef, (querySnapshot) => {
             const schoolCounts = {};
 
             querySnapshot.forEach((doc) => {
                 const userData = doc.data();
-                const school = userData.school; // Get the 'school' field
+                const school = userData.school;
 
-                if (school) { // Make sure 'school' exists
+                if (school) { 
                     schoolCounts[school] = (schoolCounts[school] || 0) + 1;
                 }
             });
 
-            // Convert to Recharts format and sort by application count (descending)
+           
             let chartData = Object.keys(schoolCounts)
                 .map((school) => ({
                     school: school,
                     applications: schoolCounts[school],
                 }))
-                .sort((a, b) => b.applications - a.applications); // Sort by applications
+                .sort((a, b) => b.applications - a.applications); 
             
-            // Limit the data if a limit is specified
+            
             if (limit && chartData.length > limit) {
                 chartData = chartData.slice(0, limit);
             }
@@ -79,18 +79,18 @@ const SchoolDistribution = ({ limit = null }) => {
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
                 <XAxis
                     type="number"
-                    dataKey="applications" // dataKey is 'applications' (the number)
+                    dataKey="applications" 
                     tick={{ fill: '#6B7280', fontSize: 12 }}
                     tickLine={{ stroke: '#6B7280' }}
                     axisLine={{ stroke: '#E5E7EB' }}
                 />
                 <YAxis
                     type="category"
-                    dataKey="school"     // dataKey is 'school' (the category)
+                    dataKey="school"     
                     tick={{ fill: '#6B7280', fontSize: 12 }}
                     tickLine={{ stroke: '#6B7280' }}
                     axisLine={{ stroke: '#E5E7EB' }}
-                    width={150}          //  Adjust width as needed for long school names
+                    width={150}         
                 />
                 <Tooltip content={<CustomTooltip/>} />
                 <Bar

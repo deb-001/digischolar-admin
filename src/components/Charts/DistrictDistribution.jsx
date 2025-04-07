@@ -8,7 +8,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
-import { db } from '../../firebase'; // Import your Firebase setup
+import { db } from '../../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 
 const DistrictDistribution = () => {
@@ -16,7 +16,7 @@ const DistrictDistribution = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Define your predefined districts
+    
     const predefinedDistricts = [
         'Anantnag',
         'Baramulla',
@@ -33,7 +33,7 @@ const DistrictDistribution = () => {
         const unsubscribe = onSnapshot(usersRef, (querySnapshot) => {
             const districtCounts = {};
 
-            // Initialize counts for ALL predefined districts to 0
+            
             predefinedDistricts.forEach((district) => {
                 districtCounts[district] = 0;
             });
@@ -47,7 +47,7 @@ const DistrictDistribution = () => {
                 }
             });
 
-            // Convert to array for Recharts, sorted by predefinedDistricts order
+            
             const chartData = Object.keys(districtCounts)
               .sort((a, b) => predefinedDistricts.indexOf(a) - predefinedDistricts.indexOf(b))
               .map((district) => ({
@@ -83,7 +83,7 @@ const DistrictDistribution = () => {
                     top: 5,
                     right: 30,
                     left: 20,
-                    bottom: 40, // Increased bottom margin
+                    bottom: 40,
                 }}
             >
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />

@@ -1,4 +1,4 @@
-// src/components/Dashboard/login.jsx  (Assuming login is now under Dashboard based on your file structure)
+// src/components/Dashboard/login.jsx
 import React, { useState } from "react";
 import { Button, Label, TextInput, Card, Alert } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
@@ -36,19 +36,19 @@ const Login = ({ setIsLoggedIn }) => {
             }
 
             if (querySnapshot.docs.length > 1) {
-                setError("Multiple users found with this ID. Contact administrator."); // Handle case of duplicate IDs (optional)
+                setError("Multiple users found with this ID. Contact administrator."); 
                 setLoading(false);
                 return;
             }
 
-            const userDoc = querySnapshot.docs[0]; // Get the DocumentSnapshot
+            const userDoc = querySnapshot.docs[0]; 
             const userData = userDoc.data();
 
             if (userData.Password === password) {
-                // Store DOCUMENT ID in localStorage
-                const documentId = userDoc.ref.id; // Get the document ID
-                localStorage.setItem('userId', documentId); // Save document ID to localStorage
-                localStorage.setItem('loggedInUserIDValue', userData.ID); // Optionally save "ID" field VALUE as well if needed elsewhere
+             
+                const documentId = userDoc.ref.id;
+                localStorage.setItem('userId', documentId); 
+                localStorage.setItem('loggedInUserIDValue', userData.ID); 
                 setIsLoggedIn(true);
                 navigate("/dashboard");
             } else {

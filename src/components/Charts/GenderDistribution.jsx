@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { db } from '../../firebase'; // Import your Firebase setup
+import { db } from '../../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 
 const GenderDistribution = () => {
@@ -24,16 +24,16 @@ const GenderDistribution = () => {
     };
 
     useEffect(() => {
-        const usersRef = collection(db, 'users'); //  Your users collection
+        const usersRef = collection(db, 'users');
 
         const unsubscribe = onSnapshot(usersRef, (querySnapshot) => {
             const genderCounts = {};
 
             querySnapshot.forEach((doc) => {
                 const userData = doc.data();
-                const gender = userData.gender; // Get the 'gender' field
+                const gender = userData.gender; 
 
-                if (gender) { // Make sure 'gender' exists
+                if (gender) { 
                     genderCounts[gender] = (genderCounts[gender] || 0) + 1;
                 }
             });
