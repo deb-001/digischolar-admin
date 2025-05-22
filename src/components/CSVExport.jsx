@@ -7,11 +7,11 @@ const CSVExport = ({ data, filename, headers }) => {
     const headerRow = headers.join(',');
     const dataRows = data.map(item => {
       return headers.map(header => {
-        // Handle potential commas and quotes in data
-        let cell = item[header] || ''; // Use empty string if data is missing
-        cell = String(cell).replace(/"/g, '""'); // Escape double quotes
+       
+        let cell = item[header] || ''; 
+        cell = String(cell).replace(/"/g, '""'); 
         if (cell.includes(',') || cell.includes('"')) {
-          cell = `"${cell}"`; // Enclose in double quotes if comma or quote exists
+          cell = `"${cell}"`; 
         }
         return cell;
       }).join(',');

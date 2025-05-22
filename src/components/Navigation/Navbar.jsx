@@ -15,12 +15,12 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 export default function TopNavbar({ onMenuToggle, sidebarOpen, setSidebarOpen, setIsLoggedIn }) {
-  // Use loggedInUserIDValue to display the actual user ID
+  
   const [loggedInUserName, setLoggedInUserName] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Retrieve the "ID" field value from localStorage
+    
     const storedLoggedInUserName = localStorage.getItem('loggedInUserIDValue');
     if (storedLoggedInUserName) {
       setLoggedInUserName(storedLoggedInUserName);

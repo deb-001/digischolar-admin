@@ -110,7 +110,7 @@ const Analytics = () => {
         }
     }, []);
 
-      // Helper function to get month index (0-11)
+      
     function getMonthIndex(monthName) {
         const months = ["January", "February", "March", "April", "May", "June",
                         "July", "August", "September", "October", "November", "December"];
